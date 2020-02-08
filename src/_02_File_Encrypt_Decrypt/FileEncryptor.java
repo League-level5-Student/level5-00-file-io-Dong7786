@@ -25,13 +25,13 @@ public class FileEncryptor {
 		
 		String[] letters = new String[message.length()];
 		for(int i = 0; i < message.length(); i ++) {
-			letters[i] = message.substring(i, i++);
+			letters[i] = message.substring(i, i+1);
 		}
 		
 		for(int i = 0; i < letters.length -1; i += 2) {
 			String flip = letters[i];
 			letters[i] = letters[i+1];
-			letters[i] = flip;
+			letters[i +1] = flip;
 			
 		}
 		
