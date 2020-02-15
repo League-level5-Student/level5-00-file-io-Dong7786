@@ -24,9 +24,9 @@ public class FileDecryptor {
 			letters[i] = str.substring(i, i +1);
 			
 		}
-		for(int i = str.length(); i > 0; i --) {
+		for(int i = letters.length -1; i > 0; i -= 2) {
 			String flip = letters[i];
-			letters[i]	= letters[i +1];
+			letters[i]	= letters[i -1];
 			letters[i -1] = flip;
 			
 		}
@@ -42,11 +42,11 @@ public class FileDecryptor {
 	void read() {
 		String message = "";
 		try {
-			FileReader reader = new FileReader("src/_02_File)Encrypt_Decrypt/file");
+			FileReader reader = new FileReader("src/_02_File_Encrypt_Decrypt/file");
 			
 			int c = reader.read();
 			while(c != -1){
-				message = message + c;
+				message = message + (char)c;
 				c = reader.read();
 			}
 			reader.close();
@@ -55,6 +55,7 @@ public class FileDecryptor {
 			
 		}
 		System.out.println(message);
+		System.out.println(decrypt(message));
 		
 	}
 

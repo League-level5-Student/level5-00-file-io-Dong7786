@@ -17,16 +17,30 @@ public class FileEncryptor {
 	
 	FileEncryptor(){
 		record(encrypt("This is a message"));
+	
 		
 	}
 	
 	String encrypt(String message) {
 		String code = "";
 		
-		String[] letters = new String[message.length()];
+		String[] letters;
+		if(message.length() %2 == 1) {
+		 letters = new String[message.length() +1];
+		}else {
+			letters = new String[message.length()];
+		}
+		
+		
 		for(int i = 0; i < message.length(); i ++) {
 			letters[i] = message.substring(i, i+1);
 		}
+		
+		if(message.length() %2 == 1) {
+			 letters[message.length()] = " ";
+			 
+			}
+		
 		
 		for(int i = 0; i < letters.length -1; i += 2) {
 			String flip = letters[i];
@@ -39,6 +53,7 @@ public class FileEncryptor {
 			code = code + letters[i];
 			
 		}
+		
 		System.out.println(code);
 		return code;
 	}
