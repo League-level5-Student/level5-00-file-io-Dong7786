@@ -2,6 +2,7 @@ package _03_To_Do_List;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -51,8 +52,6 @@ public class ToDoList implements MouseListener{
 	
 	JButton[] button = new JButton[6];
 	
-	
-
 	void addButtons() {
 		button[1] = new JButton("Add Task");
 			button[1].addMouseListener(this);
@@ -77,41 +76,57 @@ public class ToDoList implements MouseListener{
 		
 	}
 
-	String[] t = new String[9];
-	String[] task;
-	int taskNumber = 0;
+	ArrayList<String> tasks = new ArrayList<String>();
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		
 		if(e.getSource() == button[1]) {
-			if(taskNumber <= 9) {
-			t[taskNumber] = JOptionPane.showInputDialog("Enter a Task:");
-			taskNumber ++;
-			task = new String[taskNumber];
-			for(int i = 0; i < taskNumber; i ++) {
-				task[i] = t[i];
-				
-			}
-			}else {
-				JOptionPane.showMessageDialog(null, "You have reached the maximum amount of tasks!");
-						
-				
-			}
+			tasks.add(JOptionPane.showInputDialog("Create Task:"));
 			
-		}else if(e.getSource() == button[2]) {
-			String prompt = "";
-			for(int i = 0; i < task.length; i ++) {
-				prompt = prompt + (i+1) + ". " + task[i] + "\n" ;
-				
-			}
-			System.out.println(prompt);
-			JOptionPane.showMessageDialog(null, prompt);
-			
+		}else if(e.getSource() == button[2]){
+			String show = "";
+				for(int i = 0; i < tasks.size(); i ++) {
+					show = show + (i+1) + ". " + tasks.get(i) + "\n";
+					
+				}
+			JOptionPane.showMessageDialog(null, show);
 		}else if(e.getSource() == button[3]) {
+			String remove = JOptionPane.showInputDialog("Enter Task to Remove:");
+			try {
+				tasks.remove(Integer.parseInt(remove));
+				
+			}catch(Exception ex){
+				tasks.remove(match(remove, tasks));
+				
+			}
 			
 			
 		}
+		
 	}
+	
+	int match(String str, ArrayList<String> list) {
+		int indexNum = 0; 
+			int[] matches = new int[list.size()]; 
+			for(int i = 0; i < list.size(); i ++) {
+				for(int j = 0; j < str.length(); j ++) {
+					if(list.get(i).contains(str.charAt(j) + "")) {
+						matches[i] ++;
+						
+					}
+				}
+			}
+			int largest = 0;
+			for(int i = 0; i < matches.length; i ++) {
+				if(matches[i] > largest) {
+					indexNum = i; 
+					largest = matches[i];
+					
+				}
+			}
+			
+		return indexNum;
+	}
+	
 
 	public void mousePressed(MouseEvent e) {
 		
