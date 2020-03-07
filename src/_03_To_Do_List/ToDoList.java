@@ -2,155 +2,211 @@ package _03_To_Do_List;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-public class ToDoList implements MouseListener{
+public class ToDoList implements MouseListener {
 	/*
-	 * Create a program with five buttons, add task, view tasks, remove task, save list, and load list. 
+	 * Create a program with five buttons, add task, view tasks, remove task, save
+	 * list, and load list.
 	 * 
-	 * When add task is clicked:
-	 * 		ask the user for a  task and save it to an array list
+	 * When add task is clicked: ask the user for a task and save it to an array
+	 * list
 	 * 
-	 * When the view tasks button is clicked:
-	 *		show all the tasks in the list
+	 * When the view tasks button is clicked: show all the tasks in the list
 	 * 
-	 * When the remove task button is clicked:
-	 * 		prompt the user for which task to remove and take it off of the list.
+	 * When the remove task button is clicked: prompt the user for which task to
+	 * remove and take it off of the list.
 	 * 
-	 * When the save list button is clicked:
-	 * 		Save the list to a file
+	 * When the save list button is clicked: Save the list to a file
 	 * 
-	 * When the load list button is clicked:
-	 * 		Prompt the user for the location of the file and load the list from that file
+	 * When the load list button is clicked: Prompt the user for the location of the
+	 * file and load the list from that file
 	 * 
-	 * When the program starts, it should automatically load the last saved file into the list.
+	 * When the program starts, it should automatically load the last saved file
+	 * into the list.
 	 */
 	public static void main(String[] args) {
 		ToDoList list = new ToDoList();
-		
+
 	}
-	
+
 	JFrame frame;
 	JPanel panel;
-	
-	ToDoList(){
+
+	ToDoList() {
 		frame = new JFrame();
 		panel = new JPanel();
 		frame.setVisible(true);
 		frame.add(panel);
-		
+
 		addButtons();
 		frame.pack();
-		
+
 	}
-	
-	
+
 	JButton[] button = new JButton[6];
-	
+
 	void addButtons() {
 		button[1] = new JButton("Add Task");
-			button[1].addMouseListener(this);
-			panel.add(button[1]);
-			
-		button[2] = new JButton("View Task"); 
-			button[2].addMouseListener(this);
-			panel.add(button[2]);
-			
+		button[1].addMouseListener(this);
+		panel.add(button[1]);
+
+		button[2] = new JButton("View Task");
+		button[2].addMouseListener(this);
+		panel.add(button[2]);
+
 		button[3] = new JButton("Remove Task");
-			button[3].addMouseListener(this);
-			panel.add(button[3]);
-			
+		button[3].addMouseListener(this);
+		panel.add(button[3]);
+
 		button[4] = new JButton("Save List");
-			button[4].addMouseListener(this);
-			panel.add(button[4]);
-			
+		button[4].addMouseListener(this);
+		panel.add(button[4]);
+
 		button[5] = new JButton("Load List");
-			button[5].addMouseListener(this);
-			panel.add(button[5]);
-		
-		
+		button[5].addMouseListener(this);
+		panel.add(button[5]);
+
 	}
 
 	ArrayList<String> tasks = new ArrayList<String>();
+
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		if(e.getSource() == button[1]) {
-			tasks.add(JOptionPane.showInputDialog("Create Task:"));
-			
-		}else if(e.getSource() == button[2]){
+		if (e.getSource() == button[1]) {
+			String createTask = JOptionPane.showInputDialog("Create Task:");
+			if (createTask == null || createTask.isEmpty()) {
+
+			} else {
+				tasks.add(createTask);
+			}
+
+		} else if (e.getSource() == button[2]) {
 			String show = "";
-				for(int i = 0; i < tasks.size(); i ++) {
-					show = show + (i+1) + ". " + tasks.get(i) + "\n";
-					
-				}
+			for (int i = 0; i < tasks.size(); i++) {
+				show = show + (i + 1) + ". " + tasks.get(i) + "\n";
+
+			}
 			JOptionPane.showMessageDialog(null, show);
-		}else if(e.getSource() == button[3]) {
+		} else if (e.getSource() == button[3]) {
 			String remove = JOptionPane.showInputDialog("Enter Task to Remove:");
+			if (remove == null || remove.isEmpty()) {
+
+			} else if (remove.equalsIgnoreCase("override.removeall")) {
+				tasks.clear();
+			} else {
+
+				try {
+					tasks.remove(Integer.parseInt(remove + 1));
+
+				} catch (Exception ex) {
+					tasks.remove(match(remove, tasks));
+
+				}
+			}
+		} else if (e.getSource() == button[4])
+
+		{
+			String fileName = JOptionPane.showInputDialog("Enter file name:");
+			if(fileName == null) {
+				
+				
+			}else if (fileName.isEmpty()) {
+				Random rand = new Random();
+				int random = rand.nextInt(1000);
+				fileName = "Untitled" + random;
+
+			}
+			String message = "";
+			for (int i = 0; i < tasks.size(); i++) {
+				message = message + tasks.get(i) + "\n";
+
+			}
 			try {
-				tasks.remove(Integer.parseInt(remove));
-				
-			}catch(Exception ex){
-				tasks.remove(match(remove, tasks));
-				
+				FileWriter writer = new FileWriter(fileName);
+				writer.append(message);
+				writer.close();
+				System.out.println("File written");
+
+			} catch (Exception ioe) {
+
 			}
-			
-			
+
+		} else if (e.getSource() == button[5]) {
+			String loadFile = JOptionPane.showInputDialog("Enter File name:");
+			try {
+				BufferedReader br = new BufferedReader(new FileReader("src/_03_To_Do_List/" + loadFile));
+				
+				String line = br.readLine();
+				tasks.clear();
+				while (line != null) {
+					tasks.add(line);
+					line = br.readLine();
+				}
+
+				br.close();
+				System.out.println("File Read");
+			} catch (IOException ioexception) {
+
+			}
 		}
-		
+
 	}
-	
+
 	int match(String str, ArrayList<String> list) {
-		int indexNum = 0; 
-			int[] matches = new int[list.size()]; 
-			for(int i = 0; i < list.size(); i ++) {
-				for(int j = 0; j < str.length(); j ++) {
-					if(list.get(i).contains(str.charAt(j) + "")) {
-						matches[i] ++;
-						
-					}
+		int indexNum = 0;
+		int[] matches = new int[list.size()];
+		for (int i = 0; i < list.size(); i++) {
+			for (int j = 0; j < str.length(); j++) {
+				if (list.get(i).contains(str.charAt(j) + "")) {
+					matches[i]++;
+
 				}
 			}
-			int largest = 0;
-			for(int i = 0; i < matches.length; i ++) {
-				if(matches[i] > largest) {
-					indexNum = i; 
-					largest = matches[i];
-					
-				}
+		}
+		int largest = 0;
+		for (int i = 0; i < matches.length; i++) {
+			if (matches[i] > largest) {
+				indexNum = i;
+				largest = matches[i];
+
 			}
-			
+		}
+
 		return indexNum;
 	}
-	
 
 	public void mousePressed(MouseEvent e) {
-		
-		
-		
+
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
-	
+
 }

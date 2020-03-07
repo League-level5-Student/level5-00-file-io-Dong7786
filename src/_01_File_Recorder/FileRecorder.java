@@ -14,15 +14,15 @@ public class FileRecorder {
 	
 	FileRecorder(){
 		
-		
+		recorder("Inside");
 		
 		
 	}
 	void recorder(String message) {
 		try {
-			FileWriter writer = new FileWriter("src/_01_File_Recorder/file");
+			FileWriter writer = new FileWriter("src/_01_File_Recorder/file2.txt");
 			
-			writer.append(message);
+			writer.write(message);
 			writer.close();
 			
 			
@@ -42,6 +42,7 @@ public class FileRecorder {
 			return file;
 			
 		}
+		
 		if(message.contains(" ") && message.indexOf(" ") < 10) {
 			file = new File(message.substring(0, message.indexOf(" ")) + ".txt", message);
 			
