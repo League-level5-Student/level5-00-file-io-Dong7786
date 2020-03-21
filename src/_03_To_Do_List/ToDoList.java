@@ -43,6 +43,7 @@ public class ToDoList implements MouseListener {
 
 	JFrame frame;
 	JPanel panel;
+	ArrayList<String> tasks = new ArrayList<String>();
 
 	ToDoList() {
 		frame = new JFrame();
@@ -53,6 +54,7 @@ public class ToDoList implements MouseListener {
 		addButtons();
 		frame.pack();
 
+		loadFile("AutomaticallySavedFile");
 	}
 
 	JButton[] button = new JButton[6];
@@ -80,16 +82,16 @@ public class ToDoList implements MouseListener {
 
 	}
 
-	ArrayList<String> tasks = new ArrayList<String>();
-
 	@Override
 	public void mouseClicked(MouseEvent e) {
+
 		if (e.getSource() == button[1]) {
 			String createTask = JOptionPane.showInputDialog("Create Task:");
 			if (createTask == null || createTask.isEmpty()) {
 
 			} else {
 				tasks.add(createTask);
+				saveTasks("AutomaticallySavedFile");
 			}
 
 		} else if (e.getSource() == button[2]) {
@@ -108,83 +110,104 @@ public class ToDoList implements MouseListener {
 			} else {
 
 				try {
-					tasks.remove(Integer.parseInt(remove + 1));
-
+					tasks.remove(Integer.parseInt(remove) - 1);
+					System.out.println(remove + "Integer");
 				} catch (Exception ex) {
-					tasks.remove(match(remove, tasks));
-
+					tasks.remove(match(remove, tasks) +1);
+					System.out.println(remove + " Match " + ex);
 				}
+
+				saveTasks("AutomaticallySavedFile");
 			}
-		} else if (e.getSource() == button[4])
-
-		{
-			String fileName = JOptionPane.showInputDialog("Enter file name:");
-			if(fileName == null) {
-				
-				
-			}else if (fileName.isEmpty()) {
-				Random rand = new Random();
-				int random = rand.nextInt(1000);
-				fileName = "Untitled" + random;
-
-			}
-			String message = "";
-			for (int i = 0; i < tasks.size(); i++) {
-				message = message + tasks.get(i) + "\n";
-
-			}
-			try {
-				FileWriter writer = new FileWriter(fileName);
-				writer.append(message);
-				writer.close();
-				System.out.println("File written");
-
-			} catch (Exception ioe) {
-
-			}
+		} else if (e.getSource() == button[4]) {
+			saveTasks(JOptionPane.showInputDialog("Enter file name:"));
 
 		} else if (e.getSource() == button[5]) {
-			String loadFile = JOptionPane.showInputDialog("Enter File name:");
-			try {
-				BufferedReader br = new BufferedReader(new FileReader("src/_03_To_Do_List/" + loadFile));
-				
-				String line = br.readLine();
-				tasks.clear();
-				while (line != null) {
-					tasks.add(line);
-					line = br.readLine();
-				}
+			loadFile(JOptionPane.showInputDialog("Enter File name:"));
 
-				br.close();
-				System.out.println("File Read");
-			} catch (IOException ioexception) {
+		}
 
+	}
+
+	void saveTasks(String fileName) {
+		if (fileName == null) {
+
+		} else if (fileName.isEmpty()) {
+			Random rand = new Random();
+			int random = rand.nextInt(1000);
+			fileName = "Untitled" + random;
+
+		}
+		String message = "";
+		for (int i = 0; i < tasks.size(); i++) {
+			message = message + tasks.get(i) + "\n";
+
+		}
+		try {
+			FileWriter writer = new FileWriter(fileName);
+			writer.append(message);
+			writer.close();
+			System.out.println("File written");
+
+		} catch (Exception ioe) {
+
+		}
+
+	}
+
+	void loadFile(String fileName) {
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(fileName));
+
+			String line = br.readLine();
+			tasks.clear();
+			while (line != null) {
+				tasks.add(line);
+				line = br.readLine();
 			}
+
+			br.close();
+			System.out.println("File Read");
+		} catch (IOException ioexception) {
+
 		}
 
 	}
 
 	int match(String str, ArrayList<String> list) {
 		int indexNum = 0;
-		int[] matches = new int[list.size()];
-		for (int i = 0; i < list.size(); i++) {
-			for (int j = 0; j < str.length(); j++) {
-				if (list.get(i).contains(str.charAt(j) + "")) {
-					matches[i]++;
-
-				}
-			}
-		}
-		int largest = 0;
-		for (int i = 0; i < matches.length; i++) {
-			if (matches[i] > largest) {
+		int matches = 0;
+		
+		String[] strWords = str.split(" ");
+		
+		for(int i = 0; i < list.size(); i ++) {
+			String[] listWords = list.get(i).split(" ");
+			if(compare(strWords, listWords) > matches) {
 				indexNum = i;
-				largest = matches[i];
-
-			}
+				matches = compare(strWords, listWords);
+			}		
 		}
-
+		
 		return indexNum;
+	}
+	
+	int compare(String[] first, String[] second) {
+		int numMatches = 0;
+		
+		for(int one = 0; one < first.length; one ++) {
+			for(int two = 0; two < second.length; two ++) {
+				if(first[one] == second[two]) {
+					numMatches++;
+					break;
+				}
+				
+			}
+			
+		}
+	
+		
+		return numMatches;
+		
 	}
 
 	public void mousePressed(MouseEvent e) {
